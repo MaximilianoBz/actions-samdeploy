@@ -34,8 +34,14 @@ output = text
 region = $AWS_REGION" > ~/.aws/config
 
 ## Deploy
+print "Sam version\n"
 sam --version
-sam deploy --config-env $SAM_ENV
+
+print "Start build\n"
+sam build
+
+print "Start deploy\n"
+sam deploy --config-file samconfig.toml --config-env $SAM_ENV --no-confirm-changeset
 
 #sam package --region $AWS_REGION --s3-bucket $S3_BUCKET --s3-prefix $S3_BUCKET_PREFIX --template-file $SAM_TEMPLATE --output-template-file packaged.yaml
 #sam publish --region $AWS_REGION --semantic-version $SAM_VERSION --template packaged.yaml
