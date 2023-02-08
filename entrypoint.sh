@@ -34,10 +34,18 @@ output = text
 region = $AWS_REGION" > ~/.aws/config
 
 ## Deploy
+
+echo "Node version"
+node --version
+
+echo "npm version"
+npm --version
+
 echo "Sam version"
 sam --version
 
 echo "Start build"
+npm install
 sam build
 
 echo "Start deploy"
