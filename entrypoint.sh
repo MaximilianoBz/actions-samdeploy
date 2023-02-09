@@ -48,7 +48,7 @@ echo "Start build"
 # cd src
 # npm install
 # cd ..
-sam build --template-file xxxx.yml
+sam build --template-file template.yaml
 
 echo "Start deploy"
 
