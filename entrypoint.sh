@@ -45,11 +45,17 @@ echo "Sam version"
 sam --version
 
 echo "Start build"
-npm install
-sam build
+# cd src
+# npm install
+# cd ..
+sam build --template-file xxxx.yml
 
 echo "Start deploy"
-sam deploy --config-file samconfig.toml --config-env $SAM_ENV --no-confirm-changeset
 
-#sam package --region $AWS_REGION --s3-bucket $S3_BUCKET --s3-prefix $S3_BUCKET_PREFIX --template-file $SAM_TEMPLATE --output-template-file packaged.yaml
-#sam publish --region $AWS_REGION --semantic-version $SAM_VERSION --template packaged.yaml
+sam deploy 
+    --config-env $SAM_ENV
+    --no-confirm-changeset
+    --no-fail-on-empty-changeset
+    --resolve-s3
+    --region $AWS_REGION
+# sam deploy --config-file samconfig.toml --config-env $SAM_ENV --no-confirm-changeset
