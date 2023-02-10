@@ -56,7 +56,6 @@ sam deploy --stack-name $STACK_NAME \
            --config-env $AWS_ENV \
            --no-confirm-changeset \
            --no-fail-on-empty-changeset \
-           --resolve-s3 \
            --region $AWS_REGION \
            --capabilities CAPABILITY_IAM
 # sam deploy --config-file samconfig.toml --config-env $SAM_ENV --no-confirm-changeset
