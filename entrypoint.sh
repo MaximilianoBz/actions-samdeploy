@@ -93,9 +93,6 @@ node --version
 echo "npm version"
 npm --version
 
-echo "npm install"
-npm install
-
 echo "Aws deploy"
 aws cloudformation package --template-file $TEMPLATE --output-template-file $TEMPLATEOUTPUT --s3-bucket $AWS_DEPLOY_BUCKET $AWS_BUCKET_PREFIX $FORCE_UPLOAD $USE_JSON
 aws cloudformation deploy --template-file $TEMPLATEOUTPUT --stack-name $AWS_STACK_NAME $CAPABILITIES $PARAMETER_OVERRIDES
