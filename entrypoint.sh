@@ -1,5 +1,28 @@
 #!/bin/bash
 
+set -e
+
+if [[ -z "$TEMPLATE" ]]; then
+    echo "Empty template specified. Looking for template.yml..."
+
+    if [[ ! -f "template.yml" ]]; then
+        echo template.yml not found
+        exit 1
+    fi
+
+    TEMPLATE="template.yml"
+fi
+
+if [[ -z "$TEMPLATEOUTPUT" ]]; then
+    echo Template output file
+    exit 1
+fi
+
+if [[ -z "$AWS_STACK_NAME" ]]; then
+    echo AWS Stack Name invalid
+    exit 1
+fi
+
 if [[ -z "$AWS_ACCESS_KEY_ID" ]]; then
     echo AWS Access Key ID invalid
     exit 1
@@ -13,6 +36,33 @@ fi
 if [[ -z "$AWS_REGION" ]]; then
     echo AWS Region invalid
     exit 1
+fi
+
+if [[ -z "$AWS_DEPLOY_BUCKET" ]]; then
+    echo AWS Deploy Bucket invalid
+    exit 1
+fi
+
+if [[ ! -z "$AWS_BUCKET_PREFIX" ]]; then
+    AWS_BUCKET_PREFIX="--s3-prefix ${AWS_BUCKET_PREFIX}"
+fi
+
+if [[ $FORCE_UPLOAD == true ]]; then
+    FORCE_UPLOAD="--force-upload"
+fi
+
+if [[ $USE_JSON == true ]]; then
+    USE_JSON="--use-json"
+fi
+
+if [[ -z "$CAPABILITIES" ]]; then
+    CAPABILITIES="--capabilities CAPABILITY_IAM"
+else
+    CAPABILITIES="--capabilities $CAPABILITIES"
+fi
+
+if [[ ! -z "$PARAMETER_OVERRIDES" ]]; then
+    PARAMETER_OVERRIDES="--parameter-overrides $PARAMETER_OVERRIDES"
 fi
 
 # if exist folder delete
@@ -34,6 +84,20 @@ output = text
 region = $AWS_REGION" > ~/.aws/config
 
 ## Deploy
+mkdir ~/.aws
+touch ~/.aws/credentials
+touch ~/.aws/config
+
+echo "[default]
+aws_access_key_id = $AWS_ACCESS_KEY_ID
+aws_secret_access_key = $AWS_SECRET_ACCESS_KEY
+region = $AWS_REGION" > ~/.aws/credentials
+
+echo "[default]
+output = text
+region = $AWS_REGION" > ~/.aws/config
+
+echo "Start build"
 
 echo "Node version"
 node --version
@@ -41,21 +105,9 @@ node --version
 echo "npm version"
 npm --version
 
-echo "Sam version"
-sam --version
+echo "npm install"
+npm install
 
-echo "Start build"
-# cd src
-# npm install
-# cd ..
-sam build --template-file template.yaml
-
-echo "Start deploy"
-
-sam deploy --stack-name $STACK_NAME \
-           --config-env $AWS_ENV \
-           --no-confirm-changeset \
-           --no-fail-on-empty-changeset \
-           --region $AWS_REGION \
-           --capabilities CAPABILITY_IAM
-# sam deploy --config-file samconfig.toml --config-env $SAM_ENV --no-confirm-changeset
+echo "Aws deploy"
+aws cloudformation package --template-file $TEMPLATE --output-template-file $TEMPLATEOUTPUT --s3-bucket $AWS_DEPLOY_BUCKET $AWS_BUCKET_PREFIX $FORCE_UPLOAD $USE_JSON
+aws cloudformation deploy --template-file $TEMPLATEOUTPUT --stack-name $AWS_STACK_NAME $CAPABILITIES $PARAMETER_OVERRIDES
