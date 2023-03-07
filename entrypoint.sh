@@ -70,18 +70,6 @@ if [ -d ~/.aws ]; then
     rm -rf ~/.aws
 fi
 
-mkdir ~/.aws
-touch ~/.aws/credentials
-touch ~/.aws/config
-
-echo "[default]
-aws_access_key_id = $AWS_ACCESS_KEY_ID
-aws_secret_access_key = $AWS_SECRET_ACCESS_KEY
-region = $AWS_REGION" > ~/.aws/credentials
-
-echo "[default]
-output = text
-region = $AWS_REGION" > ~/.aws/config
 
 ## Deploy
 mkdir ~/.aws
